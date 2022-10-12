@@ -1,9 +1,6 @@
 # Problem 1: squashNested
 
 
-from sqlalchemy import null
-
-
 def squashNested(val):
     """
     Recursively eliminates nested lists, and always returns a list exactly one layer deep, containing all the elements.
@@ -185,7 +182,6 @@ def calculator(str):
         raise SyntaxError(f"leftover data: {str[found_len:]}")
 
 
-print(calculator("( 5 + 5 + 5 )"))
 print(calculator("((5 + (2 - (5 * 5))) / 2)"))
 
 
@@ -222,13 +218,32 @@ def makeWeight(target, weights):
     True
 
     """
-    return [0]
+    arr = []
+    if target == 0:
+        return []
+    if weights == []:
+        return None
+    for weight in weights:
+        arr.append(0)
+    else:
+        left, right = weights[0], weights[1:]
+        for val in range(len(right)):
+            if left + right[val] == target:
+                arr[0], arr[val+1] = 1, 1
+                return arr
+    res = makeWeight(target, right)
+    if res == None:
+        return None
+    else:
+        return [0] + res
 
+
+print(makeWeight(0, []))
 
 # Problem 6: makeWeightMany
 
 
-def makeWeightMany(target, weights):
+def makeWeightMulti(target, weights):
     """
     Recursively calculates a combination of weights that adds up to the target.
 
@@ -257,4 +272,39 @@ def makeWeightMany(target, weights):
     >>> makeWeightMany(8, [4, 3, 2])      # changing the order of the weights might change the result
     [2, 0, 0]
     """
-    return [0]
+
+    arr = []
+    if target == 0:
+        return []
+    if weights == []:
+        return None
+    for weight in weights:
+        arr.append(0)
+    else:
+        left, right = weights[0], weights[1:]
+        for val in range(len(right)):
+            # terrible piece of code right here
+            if left != 0:
+                try1 = target/left
+                try2 = target//left
+                if try1 == try2:
+                    arr[0] = try2
+                    return arr
+            if left*2 + right[val] == target:
+                arr[0], arr[val+1] = 2, 1
+                return arr
+            if left*2 + right[val]*2 == target:
+                arr[0], arr[val+1] = 2, 2
+                return arr
+            if left + right[val] == target:
+                arr[0], arr[val+1] = 1, 1
+                return arr
+    res = makeWeightMulti(target, right)
+    if res == None:
+        return None
+    else:
+        return [0] + res
+
+
+print(makeWeightMulti(20, [7, 5, 3]))
+#[2, 0, 2]
